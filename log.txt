@@ -8,4 +8,18 @@ Log.txt
 > sd(fold_auc)
 [1] 0.0136999
 
-Public LB: 
+Public LB: 0.52
+
+2 ------------------
+Added Male, Female variables
+Removed Applicant_Gender
+Changed nrounds to 125 from 150
+
+> print(fold_auc)
+[1] 0.5571820 0.5794472 0.5931177 0.5792398 0.5634502
+> mean(fold_auc)
+[1] 0.5744874
+> sd(fold_auc)
+[1] 0.01427908
+
+Public LB: 0.53063342592

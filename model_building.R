@@ -13,8 +13,16 @@ train.id <- train$ID
 train.y <- train$Business_Sourced
 
 ## FEATURE ENGINEERING
-train <- train[,c(13, 17:23)]
-test <- test[,c(13, 17:22)]
+train <- train[,c(5, 13, 17:23)]
+test <- test[,c(5, 13, 17:22)]
+
+train$Female <- as.numeric(train$Applicant_Gender != "M")
+train$Male <- as.numeric(!train$Female)
+test$Female <- as.numeric(test$Applicant_Gender != "M")
+test$Male <- as.numeric(!test$Female)
+
+train$Applicant_Gender <- NULL
+test$Applicant_Gender <- NULL
 
 train$Manager_Grade[!complete.cases(train)] <- median(train$Manager_Grade, na.rm = T)
 train$Manager_Num_Application[!complete.cases(train)] <- 2.00
@@ -66,7 +74,7 @@ for (fold in folds) {
     
     clf <- xgb.train(   params              = param, 
                         data                = d_train, 
-                        nrounds             = 150, 
+                        nrounds             = 125, 
                         verbose             = 2,
                         watchlist           = watchlist,
                         maximize            = FALSE
@@ -95,7 +103,7 @@ param <- list( objective    = "binary:logistic",
 
 clf <- xgb.train(   params              = param, 
                     data                = d_train, 
-                    nrounds             = 150, 
+                    nrounds             = 125, 
                     verbose             = 2,
                     watchlist           = watchlist,
                     maximize            = FALSE
@@ -107,5 +115,5 @@ test <- sparse.model.matrix(target ~ ., data = test)
 preds <- predict(clf, test)
 submission <- data.frame(ID=test.id, Business_Sourced=preds)
 cat("saving the submission file\n")
-write.csv(submission, "Submissions/submission1.csv", row.names = F)
+write.csv(submission, "Submissions/submission2.csv", row.names = F)
 
