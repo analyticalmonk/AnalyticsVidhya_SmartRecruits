@@ -79,3 +79,39 @@ Removed Applicant BirthDate info; Created an Age variable instead
 [1] 0.01241613
 
 Public LB: 0.578666756995
+
+8 ------------------
+Added Manager Join Date info
+
+> print(fold_auc)
+[1] 0.6042491 0.6308430 0.6204544 0.6037996 0.6208891
+> mean(fold_auc)
+[1] 0.6160471
+> sd(fold_auc)
+[1] 0.0117365
+
+public LB: 0.58
+
+9 -------------------
+Used Manager Birth Date info to add Manager_Age
+
+> print(fold_auc)
+[1] 0.6017031 0.6328631 0.6249353 0.6072667 0.6252992
+> mean(fold_auc)
+[1] 0.6184135
+> sd(fold_auc)
+[1] 0.01324977
+
+public LB: 0.57
+
+10 ------------------
+Added Office_PIN variable
+
+> print(fold_auc)
+[1] 0.6193239 0.6510257 0.6389947 0.6185533 0.6404322
+> mean(fold_auc)
+[1] 0.633666
+> sd(fold_auc)
+[1] 0.01422695
+
+public LB: 0.597

@@ -14,8 +14,8 @@ train.id <- train$ID
 train.y <- train$Business_Sourced
 
 ## FEATURE ENGINEERING
-train <- train[,c(3, 5, 6:9, 11:15, 17:23)]
-test <- test[,c(3, 5, 6:9, 11:15, 17:22)]
+train <- train[,-c(1, 4)]
+test <- test[,-c(1, 4)]
 
 train$Business_Sourced <- NULL
 
@@ -65,12 +65,87 @@ test$Applicant_Birth_year <- as.numeric(test$Applicant_Birth_year)
 test$Applicant_Birth_year[is.na(test$Applicant_Birth_year)] <- 
     as.numeric(names(which.max((table(test$Applicant_Birth_year)))))
 
-# Create Age variable
+# Create Applicant_age variable
 # ---------------------
-train$Age <- (2015 - train$Applicant_Birth_year)
+train$Applicant_Age <- (2015 - train$Applicant_Birth_year)
 train$Applicant_Birth_year <- NULL
-test$Age <- (2015 - test$Applicant_Birth_year)
+test$Applicant_Age <- (2015 - test$Applicant_Birth_year)
 test$Applicant_Birth_year <- NULL
+
+# Separating Manager_DOJ into date, month, year
+# ----------------------------------------------------------
+train <- separate(data = train, col = Manager_DOJ, 
+                  into = c("Manager_Join_month", "Manager_Join_date", "Manager_Join_year"))
+train$Manager_Join_date <- as.numeric(train$Manager_Join_date)
+train$Manager_Join_date[is.na(train$Manager_Join_date)] <- 
+    median(train$Manager_Join_date, na.rm = T)
+
+train$Manager_Join_month <- as.numeric(train$Manager_Join_month)
+train$Manager_Join_month[is.na(train$Manager_Join_month)] <- 
+    median(train$Manager_Join_month, na.rm = T)
+
+# train$Manager_Join_date <- NULL
+# train$Manager_Join_month <- NULL
+train$Manager_Join_year <- as.numeric(train$Manager_Join_year)
+train$Manager_Join_year[is.na(train$Manager_Join_year)] <- 
+    median(train$Manager_Join_year, na.rm = T)
+
+test <- separate(data = test, col = Manager_DOJ, 
+                 into = c("Manager_Join_month", "Manager_Join_date", "Manager_Join_year"))
+test$Manager_Join_date <- as.numeric(test$Manager_Join_date)
+test$Manager_Join_date[is.na(test$Manager_Join_date)] <- 
+    median(test$Manager_Join_date, na.rm = T)
+
+test$Manager_Join_month <- as.numeric(test$Manager_Join_month)
+test$Manager_Join_month[is.na(test$Manager_Join_month)] <- 
+    median(test$Manager_Join_month, na.rm = T)
+
+# test$Manager_Join_date <- NULL
+# test$Manager_Join_month <- NULL
+test$Manager_Join_year <- as.numeric(test$Manager_Join_year)
+test$Manager_Join_year[is.na(test$Manager_Join_year)] <- 
+    median(test$Manager_Join_year, na.rm = T)
+
+# Separating Manager_DoB into date, month, year
+# ----------------------------------------------------------
+train <- separate(data = train, col = Manager_DoB, 
+                  into = c("Manager_Birth_month", "Manager_Birth_date", "Manager_Birth_year"))
+# train$Manager_Birth_date <- as.numeric(train$Manager_Birth_date)
+# train$Manager_Birth_date[is.na(train$Manager_Birth_date)] <- 
+#     median(train$Manager_Birth_date, na.rm = T)
+# 
+# train$Manager_Birth_month <- as.numeric(train$Manager_Birth_month)
+# train$Manager_Birth_month[is.na(train$Manager_Birth_month)] <- 
+#     median(train$Manager_Birth_month, na.rm = T)
+
+train$Manager_Birth_date <- NULL
+train$Manager_Birth_month <- NULL
+train$Manager_Birth_year <- as.numeric(train$Manager_Birth_year)
+train$Manager_Birth_year[is.na(train$Manager_Birth_year)] <- 
+    median(train$Manager_Birth_year, na.rm = T)
+
+test <- separate(data = test, col = Manager_DoB, 
+                 into = c("Manager_Birth_month", "Manager_Birth_date", "Manager_Birth_year"))
+# test$Manager_Birth_date <- as.numeric(test$Manager_Birth_date)
+# test$Manager_Birth_date[is.na(test$Manager_Birth_date)] <- 
+#     median(test$Manager_Birth_date, na.rm = T)
+# 
+# test$Manager_Birth_month <- as.numeric(test$Manager_Birth_month)
+# test$Manager_Birth_month[is.na(test$Manager_Birth_month)] <- 
+#     median(test$Manager_Birth_month, na.rm = T)
+
+test$Manager_Birth_date <- NULL
+test$Manager_Birth_month <- NULL
+test$Manager_Birth_year <- as.numeric(test$Manager_Birth_year)
+test$Manager_Birth_year[is.na(test$Manager_Birth_year)] <- 
+    median(test$Manager_Birth_year, na.rm = T)
+
+# Create Manager_Age variable
+# ---------------------
+train$Manager_Age <- (2015 - train$Manager_Birth_year)
+train$Manager_Birth_year <- NULL
+test$Manager_Age <- (2015 - test$Manager_Birth_year)
+test$Manager_Birth_year <- NULL
 
 # Encoding Applicant_Gender
 # ----------------------------------------------------------
@@ -257,6 +332,10 @@ for (fold in folds) {
     x_test <- train[fold, ]
     x_test.y <- train$Business_Sourced[fold]
     
+    print("Split info")
+    print(table(x_train$Business_Sourced)/nrow(x_train))
+    print(table(x_test$Business_Sourced)/nrow(x_test))
+    
     x_train <- sparse.model.matrix(Business_Sourced ~ ., data= x_train) 
     x_test <- sparse.model.matrix(Business_Sourced ~ ., data = x_test)
     
@@ -313,5 +392,5 @@ test <- sparse.model.matrix(target ~ ., data = test)
 preds <- predict(clf, test)
 submission <- data.frame(ID=test.id, Business_Sourced=preds)
 cat("saving the submission file\n")
-write.csv(submission, "Submissions/submission7.csv", row.names = F)
+write.csv(submission, "Submissions/submission10.csv", row.names = F)
 
