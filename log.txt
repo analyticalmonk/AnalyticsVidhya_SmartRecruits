@@ -55,3 +55,27 @@ Changed depth to 2
 [1] 0.007703269
 
 Public LB: 0.50
+
+6 -----------------
+Included Applicant Date variables
+
+> print(fold_auc)
+[1] 0.5898055 0.6228925 0.6145244 0.6084384 0.6064969
+> mean(fold_auc)
+[1] 0.6084315
+> sd(fold_auc)
+[1] 0.01221593
+
+Public LB: 0.54
+
+7 -----------------
+Removed Applicant BirthDate info; Created an Age variable instead
+
+> print(fold_auc)
+[1] 0.5886343 0.6196701 0.6181840 0.6079076 0.6105778
+> mean(fold_auc)
+[1] 0.6089948
+> sd(fold_auc)
+[1] 0.01241613
+
+Public LB: 0.578666756995
