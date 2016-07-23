@@ -115,3 +115,28 @@ Added Office_PIN variable
 [1] 0.01422695
 
 public LB: 0.597
+
+11 ------------------
+Removed Manager Gender and Applicant Marital Status
+Added Business by Class A Advisor
+
+> print(fold_auc)
+[1] 0.6193533 0.6516049 0.6378345 0.6170152 0.6399937
+> mean(fold_auc)
+[1] 0.6331603
+> sd(fold_auc)
+[1] 0.01466326
+
+public LB: 0.59
+
+12 -------------------
+Added ApplicantCity_PIN
+
+> print(fold_auc)
+[1] 0.6039560 0.6296482 0.6273919 0.6218840 0.6367833
+> mean(fold_auc)
+[1] 0.6239327
+> sd(fold_auc)
+[1] 0.01237979
+
+public LB:

@@ -13,7 +13,10 @@ test.id <- test$ID
 train.id <- train$ID
 train.y <- train$Business_Sourced
 
+#########################################################################################
 ## FEATURE ENGINEERING
+## -------------------
+## -------------------
 train <- train[,-c(1, 4)]
 test <- test[,-c(1, 4)]
 
@@ -317,10 +320,31 @@ test$Manager_Business2[!complete.cases(test)] <- median(test$Manager_Business2,
 test$Manager_Num_Products2[!complete.cases(test)] <- median(test$Manager_Num_Products2, 
                                                               na.rm = T)
 
-######################
+# Create variables for business from Category A advisor
+# -----------------------------------------------------
+# train$Manager_Business1 <- (train$Manager_Business - train$Manager_Business2)
+# train$Manager_Num_Products1 <- (train$Manager_Num_Products2 - train$Manager_Num_Products2)
+# 
+# test$Manager_Business1 <- (test$Manager_Business - test$Manager_Business2)
+# test$Manager_Num_Products1 <- (test$Manager_Num_Products2 - test$Manager_Num_Products2)
 
-## Add back the Target variable, Business_Sourced
+# ----------------------------------------------
+# train$Manager_Gender <- NULL
+# test$Manager_Gender <- NULL
+# train$Applicant_Marital_Status <- NULL
+# test$Applicant_Marital_Status <- NULL
+
+# ----------------------------------------------
+# train$Applicant_City_PIN[is.na(train$Applicant_City_PIN)] <- 
+#     mean(train$Applicant_City_PIN, na.rm = T)
+# test$Applicant_City_PIN[is.na(test$Applicant_City_PIN)] <- 
+#     mean(test$Applicant_City_PIN, na.rm = T)
+
+# Add back the Target variable, Business_Sourced
+# ----------------------------------------------
 train$Business_Sourced <- train.y
+
+###########################################################################################
 
 ## BUILD MODEL WITH STRATIFIED K-FOLD CV
 folds <- createFolds(as.factor(train$Business_Sourced), k = 5)
@@ -348,7 +372,7 @@ for (fold in folds) {
                    booster      = "gbtree",
                    eval_metric  = "auc",
                    eta          = 0.05,
-                   max_depth    = 4
+                   max_depth    = 3
                    )
     
     clf <- xgb.train(   params              = param, 
@@ -367,7 +391,7 @@ for (fold in folds) {
 print(fold_auc)
 ########################################
 
-train <- sparse.model.matrix(Business_sourced ~ ., data = train)
+train <- sparse.model.matrix(Business_Sourced ~ ., data = train)
 dtrain <- xgb.DMatrix(data=train, label=train.y)
 watchlist <- list(train=dtrain)
 # 
@@ -392,5 +416,5 @@ test <- sparse.model.matrix(target ~ ., data = test)
 preds <- predict(clf, test)
 submission <- data.frame(ID=test.id, Business_Sourced=preds)
 cat("saving the submission file\n")
-write.csv(submission, "Submissions/submission10.csv", row.names = F)
+write.csv(submission, "Submissions/submission12.csv", row.names = F)
 
