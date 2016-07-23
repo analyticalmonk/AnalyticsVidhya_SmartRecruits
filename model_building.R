@@ -13,17 +13,148 @@ train.id <- train$ID
 train.y <- train$Business_Sourced
 
 ## FEATURE ENGINEERING
-train <- train[,c(5, 13, 17:23)]
-test <- test[,c(5, 13, 17:22)]
+train <- train[,c(5, 7:9, 11:15, 17:23)]
+test <- test[,c(5, 7:9, 11:15, 17:22)]
 
-train$Female <- as.numeric(train$Applicant_Gender != "M")
-train$Male <- as.numeric(!train$Female)
-test$Female <- as.numeric(test$Applicant_Gender != "M")
-test$Male <- as.numeric(!test$Female)
+# Encoding Applicant_Gender
+train$Applicant_Gender[train$Applicant_Gender == "F"] <- 1
+train$Applicant_Gender[train$Applicant_Gender == "M"] <- 2
+train$Applicant_Gender[train$Applicant_Gender == ""] <- 3
+train$Applicant_Gender <- as.numeric(train$Applicant_Gender)
 
-train$Applicant_Gender <- NULL
-test$Applicant_Gender <- NULL
+test$Applicant_Gender[test$Applicant_Gender == "F"] <- 1
+test$Applicant_Gender[test$Applicant_Gender == "M"] <- 2
+test$Applicant_Gender[test$Applicant_Gender == ""] <- 3
+test$Applicant_Gender <- as.numeric(test$Applicant_Gender)
 
+# train$Female <- as.numeric(train$Applicant_Gender != "M")
+# train$Male <- as.numeric(!train$Female)
+# test$Female <- as.numeric(test$Applicant_Gender != "M")
+# test$Male <- as.numeric(!test$Female)
+# 
+# train$Applicant_Gender <- NULL
+# test$Applicant_Gender <- NULL
+
+# Encoding Applicant_Marital_Status
+train$Applicant_Marital_Status[train$Applicant_Marital_Status == "M"] <- 1
+train$Applicant_Marital_Status[train$Applicant_Marital_Status == "S"] <- 2
+train$Applicant_Marital_Status[train$Applicant_Marital_Status == "D"] <- 3
+train$Applicant_Marital_Status[train$Applicant_Marital_Status == "W" |
+                                   train$Applicant_Marital_Status == "D" |
+                                   train$Applicant_Marital_Status == ""] <- 3
+train$Applicant_Marital_Status <- as.numeric(train$Applicant_Marital_Status)
+
+test$Applicant_Marital_Status[test$Applicant_Marital_Status == "M"] <- 1
+test$Applicant_Marital_Status[test$Applicant_Marital_Status == "S"] <- 2
+test$Applicant_Marital_Status[test$Applicant_Marital_Status == "D"] <- 3
+test$Applicant_Marital_Status[test$Applicant_Marital_Status == "W" |
+                                   test$Applicant_Marital_Status == "D" |
+                                   test$Applicant_Marital_Status == ""] <- 3
+test$Applicant_Marital_Status <- as.numeric(test$Applicant_Marital_Status)
+
+# Encoding Applicant_Occupation
+train$Applicant_Occupation[train$Applicant_Occupation == "Salaried"] <- 1
+train$Applicant_Occupation[train$Applicant_Occupation == "Business"] <- 2
+train$Applicant_Occupation[train$Applicant_Occupation == "Others" |
+                               train$Applicant_Occupation == ""] <- 3
+train$Applicant_Occupation[train$Applicant_Occupation == "Self Employed" |
+                               train$Applicant_Occupation == "Student"] <- 4
+train$Applicant_Occupation <- as.numeric(train$Applicant_Occupation)
+
+test$Applicant_Occupation[test$Applicant_Occupation == "Salaried"] <- 1
+test$Applicant_Occupation[test$Applicant_Occupation == "Business"] <- 2
+test$Applicant_Occupation[test$Applicant_Occupation == "Others" |
+                               test$Applicant_Occupation == ""] <- 3
+test$Applicant_Occupation[test$Applicant_Occupation == "Self Employed" |
+                               test$Applicant_Occupation == "Student"] <- 4
+test$Applicant_Occupation <- as.numeric(test$Applicant_Occupation)
+
+# Encoding Applicant_Qualification
+train$Applicant_Qualification[train$Applicant_Qualification == "Class XII"] <- 1
+train$Applicant_Qualification[train$Applicant_Qualification == "Graduate"] <- 2
+train$Applicant_Qualification[train$Applicant_Qualification == "Class X"] <- 3
+train$Applicant_Qualification[train$Applicant_Qualification != 1 &
+                                  train$Applicant_Qualification != 2 &
+                                  train$Applicant_Qualification != 3] <- 4
+train$Applicant_Qualification <- as.numeric(train$Applicant_Qualification)
+
+test$Applicant_Qualification[test$Applicant_Qualification == "Class XII"] <- 1
+test$Applicant_Qualification[test$Applicant_Qualification == "Graduate"] <- 2
+test$Applicant_Qualification[test$Applicant_Qualification == "Class X"] <- 3
+test$Applicant_Qualification[test$Applicant_Qualification != 1 &
+                                  test$Applicant_Qualification != 2 &
+                                  test$Applicant_Qualification != 3] <- 4
+test$Applicant_Qualification <- as.numeric(test$Applicant_Qualification)
+
+# Encoding Manager_Joining_Designation
+temp_joining_des <- train$Manager_Joining_Designation
+train$Manager_Joining_Designation <- 6
+train$Manager_Joining_Designation[temp_joining_des == "Level 1"] <- 1
+train$Manager_Joining_Designation[temp_joining_des == "Level 2"] <- 2
+train$Manager_Joining_Designation[temp_joining_des == "Level 3"] <- 3
+train$Manager_Joining_Designation[temp_joining_des == "Level 4"] <- 4
+train$Manager_Joining_Designation[temp_joining_des == "Level 5" |
+                                      temp_joining_des == "Level 6" |
+                                      temp_joining_des == "Level 7"] <- 5
+rm(temp_joining_des)
+
+temp_joining_des <- test$Manager_Joining_Designation
+test$Manager_Joining_Designation <- 6
+test$Manager_Joining_Designation[temp_joining_des == "Level 1"] <- 1
+test$Manager_Joining_Designation[temp_joining_des == "Level 2"] <- 2
+test$Manager_Joining_Designation[temp_joining_des == "Level 3"] <- 3
+test$Manager_Joining_Designation[temp_joining_des == "Level 4"] <- 4
+test$Manager_Joining_Designation[temp_joining_des == "Level 5" |
+                                      temp_joining_des == "Level 6" |
+                                      temp_joining_des == "Level 7"] <- 5
+rm(temp_joining_des)
+
+# Encoding Manager_Current_Designation
+temp_current_des <- train$Manager_Current_Designation
+train$Manager_Current_Designation <- 6
+train$Manager_Current_Designation[temp_current_des == "Level 1"] <- 1
+train$Manager_Current_Designation[temp_current_des == "Level 2"] <- 2
+train$Manager_Current_Designation[temp_current_des == "Level 3"] <- 3
+train$Manager_Current_Designation[temp_current_des == "Level 4"] <- 4
+train$Manager_Current_Designation[temp_current_des == "Level 5" |
+                                      temp_current_des == "Level 6" |
+                                      temp_current_des == "Level 7"] <- 5
+rm(temp_current_des)
+
+temp_current_des <- test$Manager_Current_Designation
+test$Manager_Current_Designation <- 6
+test$Manager_Current_Designation[temp_current_des == "Level 1"] <- 1
+test$Manager_Current_Designation[temp_current_des == "Level 2"] <- 2
+test$Manager_Current_Designation[temp_current_des == "Level 3"] <- 3
+test$Manager_Current_Designation[temp_current_des == "Level 4"] <- 4
+test$Manager_Current_Designation[temp_current_des == "Level 5" |
+                                      temp_current_des == "Level 6" |
+                                      temp_current_des == "Level 7"] <- 5
+rm(temp_current_des)
+
+# Encoding Manager_Status
+train$Manager_Status[train$Manager_Status == "Confirmation"] <- 1
+train$Manager_Status[train$Manager_Status == "Probation"] <- 2
+train$Manager_Status[train$Manager_Status == ""] <- 3
+train$Manager_Status <- as.numeric(train$Manager_Status)
+
+test$Manager_Status[test$Manager_Status == "Confirmation"] <- 1
+test$Manager_Status[test$Manager_Status == "Probation"] <- 2
+test$Manager_Status[test$Manager_Status == ""] <- 3
+test$Manager_Status <- as.numeric(test$Manager_Status)
+
+# Encoding Manager_Gender
+train$Manager_Gender[train$Manager_Gender == "F"] <- 1
+train$Manager_Gender[train$Manager_Gender == "M"] <- 2
+train$Manager_Gender[train$Manager_Gender == ""] <- 3
+train$Manager_Gender <- as.numeric(train$Manager_Gender)
+
+test$Manager_Gender[test$Manager_Gender == "F"] <- 1
+test$Manager_Gender[test$Manager_Gender == "M"] <- 2
+test$Manager_Gender[test$Manager_Gender == ""] <- 3
+test$Manager_Gender <- as.numeric(test$Manager_Gender)
+
+# Imputing the numeric variables
 train$Manager_Grade[!complete.cases(train)] <- median(train$Manager_Grade, na.rm = T)
 train$Manager_Num_Application[!complete.cases(train)] <- 2.00
 train$Manager_Num_Coded[!complete.cases(train)] <- mean(train$Manager_Num_Coded, na.rm = T)
@@ -68,8 +199,8 @@ for (fold in folds) {
     param <- list( objective    = "binary:logistic",
                    booster      = "gbtree",
                    eval_metric  = "auc",
-                   eta          = 0.02,
-                   max_depth    = 5
+                   eta          = 0.05,
+                   max_depth    = 2
                    )
     
     clf <- xgb.train(   params              = param, 
@@ -97,8 +228,8 @@ watchlist <- list(train=dtrain)
 param <- list( objective    = "binary:logistic",
                booster      = "gbtree",
                eval_metric  = "auc",
-               eta          = 0.02,
-               max_depth    = 5
+               eta          = 0.05,
+               max_depth    = 8
 )
 
 clf <- xgb.train(   params              = param, 
@@ -115,5 +246,5 @@ test <- sparse.model.matrix(target ~ ., data = test)
 preds <- predict(clf, test)
 submission <- data.frame(ID=test.id, Business_Sourced=preds)
 cat("saving the submission file\n")
-write.csv(submission, "Submissions/submission2.csv", row.names = F)
+write.csv(submission, "Submissions/submission5.csv", row.names = F)
 

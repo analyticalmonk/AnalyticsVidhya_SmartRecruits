@@ -23,3 +23,35 @@ Changed nrounds to 125 from 150
 [1] 0.01427908
 
 Public LB: 0.53063342592
+
+3 ------------------
+Encoded variables
+
+> print(fold_auc)
+[1] 0.5803248 0.5967548 0.5968560 0.5836218 0.5890557
+> sd(fold_auc)
+[1] 0.007508699
+> mean(fold_auc)
+[1] 0.5893226
+
+4 ------------------
+Changed depth from 5 to 8
+
+> print(fold_auc)
+[1] 0.5717975 0.6062098 0.6135852 0.5938706 0.5818983
+> mean(fold_auc)
+[1] 0.5934723
+> sd(fold_auc)
+[1] 0.01710765
+
+5 -----------------
+Changed depth to 2
+
+> print(fold_auc)
+[1] 0.5776977 0.5700044 0.5881579 0.5864932 0.5750182
+> mean(fold_auc)
+[1] 0.5794743
+> sd(fold_auc)
+[1] 0.007703269
+
+Public LB: 0.50
