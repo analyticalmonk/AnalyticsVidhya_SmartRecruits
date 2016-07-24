@@ -139,4 +139,91 @@ Added ApplicantCity_PIN
 > sd(fold_auc)
 [1] 0.01237979
 
-public LB:
+public LB: 0.58
+
+13 -------------------
+Tuned Hyperparameters using Davut Polat's approach described here:
+https://www.kaggle.com/c/bnp-paribas-cardif-claims-management/forums/t/19083/best-practices-for-parameter-tuning-on-models/108783#post108783
+
+> print(fold_auc)
+[1] 0.6369154 0.6348540 0.6456727 0.6688282 0.6384908
+> mean(fold_auc)
+[1] 0.6449522
+> sd(fold_auc)
+[1] 0.01395436
+
+public LB: 0.602131291918
+
+14 --------------------
+Changed nrounds from 200 to 150
+
+> print(fold_auc)
+[1] 0.6430740 0.6578375 0.6417713 0.6356861 0.6579393
+> mean(fold_auc)
+[1] 0.6472617
+> sd(fold_auc)
+[1] 0.01009375
+
+public LB: 0.59
+
+15 ---------------------
+Added Manager_Progress variable
+
+> print(fold_auc)
+[1] 0.6363332 0.6566584 0.6507521 0.6306357 0.6500852
+> mean(fold_auc)
+[1] 0.6448929
+> sd(fold_auc)
+[1] 0.01091162
+
+public LB: 0.616988460583
+
+16 ----------------------
+Created Manager_Experience variable
+
+> print(fold_auc)
+[1] 0.6363271 0.6504765 0.6544330 0.6309831 0.6527037
+> mean(fold_auc)
+[1] 0.6449847
+> sd(fold_auc)
+[1] 0.01060677
+
+public LB: 0.59
+
+17 -----------------------
+Used MICE imputation for numeric variables
+
+> print(fold_auc)
+[1] 0.6507499 0.6268592 0.6239240 0.6519003 0.6439642
+> mean(fold_auc)
+[1] 0.6394795
+> sd(fold_auc)
+[1] 0.01325382
+
+public LB: 0.57
+
+18 -----------------------
+Used MICE imputation with 'rf' mode
+
+> print(fold_auc)
+[1] 0.6441430 0.6416233 0.6237396 0.6404840 0.6581744
+> mean(fold_auc)
+[1] 0.6416329
+> sd(fold_auc)
+[1] 0.01226186
+
+public LB: 0.597276155635
+
+19 -----------------------
+Removed Manager_Experience
+Used MICE imputation with 'rf' mode
+Changed nrounds to 175 from 150
+
+> print(fold_auc)
+[1] 0.6549643 0.6610666 0.6517388 0.6380177 0.6282266
+> mean(fold_auc)
+[1] 0.6468028
+> sd(fold_auc)
+[1] 0.01338547
+
+public LB: 0.597232798139

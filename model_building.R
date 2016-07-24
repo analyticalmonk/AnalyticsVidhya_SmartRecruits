@@ -3,6 +3,7 @@ library(Matrix)
 library(caret)
 library(ROCR)
 library(tidyr)
+library(mice)
 
 set.seed(1234)
 
@@ -70,9 +71,9 @@ test$Applicant_Birth_year[is.na(test$Applicant_Birth_year)] <-
 
 # Create Applicant_age variable
 # ---------------------
-train$Applicant_Age <- (2015 - train$Applicant_Birth_year)
+train$Applicant_Age <- (2008 - train$Applicant_Birth_year)
 train$Applicant_Birth_year <- NULL
-test$Applicant_Age <- (2015 - test$Applicant_Birth_year)
+test$Applicant_Age <- (2008 - test$Applicant_Birth_year)
 test$Applicant_Birth_year <- NULL
 
 # Separating Manager_DOJ into date, month, year
@@ -108,6 +109,13 @@ test$Manager_Join_month[is.na(test$Manager_Join_month)] <-
 test$Manager_Join_year <- as.numeric(test$Manager_Join_year)
 test$Manager_Join_year[is.na(test$Manager_Join_year)] <- 
     median(test$Manager_Join_year, na.rm = T)
+
+# Create Manager_Experience variable
+# ----------------------------------
+# train$Manager_Experience <- (2008 - train$Manager_Join_year)
+# train$Manager_Join_year <- NULL
+# test$Manager_Experience <- (2008 - test$Manager_Join_year)
+# test$Manager_Join_year <- NULL
 
 # Separating Manager_DoB into date, month, year
 # ----------------------------------------------------------
@@ -145,9 +153,9 @@ test$Manager_Birth_year[is.na(test$Manager_Birth_year)] <-
 
 # Create Manager_Age variable
 # ---------------------
-train$Manager_Age <- (2015 - train$Manager_Birth_year)
+train$Manager_Age <- (2008 - train$Manager_Birth_year)
 train$Manager_Birth_year <- NULL
-test$Manager_Age <- (2015 - test$Manager_Birth_year)
+test$Manager_Age <- (2008 - test$Manager_Birth_year)
 test$Manager_Birth_year <- NULL
 
 # Encoding Applicant_Gender
@@ -227,8 +235,9 @@ test$Applicant_Qualification <- as.numeric(test$Applicant_Qualification)
 # Encoding Manager_Joining_Designation
 # ----------------------------------------------------------
 temp_joining_des <- train$Manager_Joining_Designation
-train$Manager_Joining_Designation <- 6
-train$Manager_Joining_Designation[temp_joining_des == "Level 1"] <- 1
+train$Manager_Joining_Designation <- 0
+train$Manager_Joining_Designation[temp_joining_des == "Level 1"|
+                                      temp_joining_des == "Other"] <- 1
 train$Manager_Joining_Designation[temp_joining_des == "Level 2"] <- 2
 train$Manager_Joining_Designation[temp_joining_des == "Level 3"] <- 3
 train$Manager_Joining_Designation[temp_joining_des == "Level 4"] <- 4
@@ -238,8 +247,9 @@ train$Manager_Joining_Designation[temp_joining_des == "Level 5" |
 rm(temp_joining_des)
 
 temp_joining_des <- test$Manager_Joining_Designation
-test$Manager_Joining_Designation <- 6
-test$Manager_Joining_Designation[temp_joining_des == "Level 1"] <- 1
+test$Manager_Joining_Designation <- 0
+test$Manager_Joining_Designation[temp_joining_des == "Level 1"|
+                                     temp_joining_des == "Other"] <- 1
 test$Manager_Joining_Designation[temp_joining_des == "Level 2"] <- 2
 test$Manager_Joining_Designation[temp_joining_des == "Level 3"] <- 3
 test$Manager_Joining_Designation[temp_joining_des == "Level 4"] <- 4
@@ -251,8 +261,9 @@ rm(temp_joining_des)
 # Encoding Manager_Current_Designation
 # ----------------------------------------------------------
 temp_current_des <- train$Manager_Current_Designation
-train$Manager_Current_Designation <- 6
-train$Manager_Current_Designation[temp_current_des == "Level 1"] <- 1
+train$Manager_Current_Designation <- 0
+train$Manager_Current_Designation[temp_current_des == "Level 1"|
+                                      temp_current_des == "Other"] <- 1
 train$Manager_Current_Designation[temp_current_des == "Level 2"] <- 2
 train$Manager_Current_Designation[temp_current_des == "Level 3"] <- 3
 train$Manager_Current_Designation[temp_current_des == "Level 4"] <- 4
@@ -262,8 +273,9 @@ train$Manager_Current_Designation[temp_current_des == "Level 5" |
 rm(temp_current_des)
 
 temp_current_des <- test$Manager_Current_Designation
-test$Manager_Current_Designation <- 6
-test$Manager_Current_Designation[temp_current_des == "Level 1"] <- 1
+test$Manager_Current_Designation <- 0
+test$Manager_Current_Designation[temp_current_des == "Level 1" |
+                                     temp_current_des == "Other"] <- 1
 test$Manager_Current_Designation[temp_current_des == "Level 2"] <- 2
 test$Manager_Current_Designation[temp_current_des == "Level 3"] <- 3
 test$Manager_Current_Designation[temp_current_des == "Level 4"] <- 4
@@ -271,6 +283,16 @@ test$Manager_Current_Designation[temp_current_des == "Level 5" |
                                       temp_current_des == "Level 6" |
                                       temp_current_des == "Level 7"] <- 5
 rm(temp_current_des)
+
+# Creating Manager_Progress variable
+# ----------------------------------
+train$Manager_Progress <- (train$Manager_Current_Designation - 
+                               train$Manager_Joining_Designation)
+train$Manager_Progress[train$Manager_Joining_Designation == 0] <- -2
+
+test$Manager_Progress <- (test$Manager_Current_Designation - 
+                              test$Manager_Joining_Designation)
+test$Manager_Progress[test$Manager_Joining_Designation == 0] <- -2
 
 # Encoding Manager_Status
 # ----------------------------------------------------------
@@ -299,26 +321,44 @@ test$Manager_Gender <- as.numeric(test$Manager_Gender)
 # Imputing the numeric variables
 # ----------------------------------------------------------
 train$Manager_Grade[!complete.cases(train)] <- median(train$Manager_Grade, na.rm = T)
-train$Manager_Num_Application[!complete.cases(train)] <- 2.00
-train$Manager_Num_Coded[!complete.cases(train)] <- mean(train$Manager_Num_Coded, na.rm = T)
-train$Manager_Business[!complete.cases(train)] <- mean(train$Manager_Business, na.rm = T)
-train$Manager_Num_Products[!complete.cases(train)] <- mean(train$Manager_Num_Products, 
-                                                             na.rm = T)
-train$Manager_Business2[!complete.cases(train)] <- median(train$Manager_Business2, 
-                                                          na.rm = T)
-train$Manager_Num_Products2[!complete.cases(train)] <- median(train$Manager_Num_Products2, 
-                                                          na.rm = T)
-
+# train$Manager_Num_Application[!complete.cases(train)] <- 2.00
+# train$Manager_Num_Coded[!complete.cases(train)] <- mean(train$Manager_Num_Coded, na.rm = T)
+# train$Manager_Business[!complete.cases(train)] <- mean(train$Manager_Business, na.rm = T)
+# train$Manager_Num_Products[!complete.cases(train)] <- mean(train$Manager_Num_Products, 
+#                                                              na.rm = T)
+# train$Manager_Business2[!complete.cases(train)] <- median(train$Manager_Business2, 
+#                                                           na.rm = T)
+# train$Manager_Num_Products2[!complete.cases(train)] <- median(train$Manager_Num_Products2, 
+#                                                           na.rm = T)
+# 
 test$Manager_Grade[!complete.cases(test)] <- median(test$Manager_Grade, na.rm = T)
-test$Manager_Num_Application[!complete.cases(test)] <- 2.00
-test$Manager_Num_Coded[!complete.cases(test)] <- mean(test$Manager_Num_Coded, na.rm = T)
-test$Manager_Business[!complete.cases(test)] <- mean(test$Manager_Business, na.rm = T)
-test$Manager_Num_Products[!complete.cases(test)] <- mean(test$Manager_Num_Products, 
-                                                           na.rm = T)
-test$Manager_Business2[!complete.cases(test)] <- median(test$Manager_Business2, 
-                                                          na.rm = T)
-test$Manager_Num_Products2[!complete.cases(test)] <- median(test$Manager_Num_Products2, 
-                                                              na.rm = T)
+# test$Manager_Num_Application[!complete.cases(test)] <- 2.00
+# test$Manager_Num_Coded[!complete.cases(test)] <- mean(test$Manager_Num_Coded, na.rm = T)
+# test$Manager_Business[!complete.cases(test)] <- mean(test$Manager_Business, na.rm = T)
+# test$Manager_Num_Products[!complete.cases(test)] <- mean(test$Manager_Num_Products, 
+#                                                            na.rm = T)
+# test$Manager_Business2[!complete.cases(test)] <- median(test$Manager_Business2, 
+#                                                           na.rm = T)
+# test$Manager_Num_Products2[!complete.cases(test)] <- median(test$Manager_Num_Products2, 
+#                                                               na.rm = T)
+names_numeric <- names(train[,c(17:22)])
+
+train_init = mice(train[,names_numeric], maxit = 0)
+meth = train_init$method
+predM = train_init$predictorMatrix
+meth[names_numeric] = "rf"
+imputed = mice(train[,names_numeric], method=meth, predictorMatrix=predM, m=5)
+imputed <- complete(imputed)
+train[,names_numeric] <- imputed
+
+test_init = mice(test[,names_numeric], maxit = 0)
+meth = test_init$method
+predM = test_init$predictorMatrix
+meth[names_numeric] = "rf"
+imputed = mice(test[,names_numeric], method=meth, predictorMatrix=predM, m=5)
+imputed <- complete(imputed)
+test[,names_numeric] <- imputed
+
 
 # Create variables for business from Category A advisor
 # -----------------------------------------------------
@@ -346,6 +386,44 @@ train$Business_Sourced <- train.y
 
 ###########################################################################################
 
+## PARAMETER TUNING
+
+# split <- createDataPartition(train$Business_Sourced, p = 0.8, list = F)
+# x_train <- train[split,]
+# x_train.y <- train$Business_Sourced[split]
+# x_test <- train[-split,]
+# x_test.y <- train$Business_Sourced[-split]
+# 
+# x_train <- sparse.model.matrix(Business_Sourced ~ ., data= x_train) 
+# x_test <- sparse.model.matrix(Business_Sourced ~ ., data = x_test)
+# 
+# d_train <- xgb.DMatrix(data = x_train, label = x_train.y)
+# d_test <- xgb.DMatrix(data = x_test, label = x_test.y)
+# watchlist <- list(train=d_train, test=d_test)
+# 
+# param <- list( objective    = "binary:logistic",
+#                booster      = "gbtree",
+#                eval_metric  = "auc",
+#                subsample = 0.8,
+#                min_child_weight = 5,
+#                colsample_bytree = 0.2,
+#                eta          = 0.05,
+#                max_depth    = 8
+# )
+# 
+# clf <- xgb.train(   params              = param, 
+#                     data                = d_train, 
+#                     nrounds             = 300, 
+#                     verbose             = 2,
+#                     watchlist           = watchlist
+# )
+# 
+# fold_pred <- predict(clf, x_test)
+# pred <- prediction(fold_pred, x_test.y)
+# auc <- performance(pred, measure = "auc")
+
+###########################################################################################
+
 ## BUILD MODEL WITH STRATIFIED K-FOLD CV
 folds <- createFolds(as.factor(train$Business_Sourced), k = 5)
 fold_auc <- c()
@@ -367,21 +445,22 @@ for (fold in folds) {
     d_test <- xgb.DMatrix(data = x_test, label = x_test.y)
     watchlist <- list(train=d_train, test=d_test)
     
-    # Changed depth from 2 to 4
     param <- list( objective    = "binary:logistic",
                    booster      = "gbtree",
                    eval_metric  = "auc",
+                   subsample = 0.8,
+                   min_child_weight = 5,
+                   colsample_bytree = 0.2,
                    eta          = 0.05,
-                   max_depth    = 3
-                   )
+                   max_depth    = 8
+    )
     
     clf <- xgb.train(   params              = param, 
                         data                = d_train, 
-                        nrounds             = 125, 
+                        nrounds             = 175, 
                         verbose             = 2,
                         watchlist           = watchlist
-                        )
-    
+    )    
     fold_pred <- predict(clf, x_test)
     pred <- prediction(fold_pred, x_test.y)
     auc <- performance(pred, measure = "auc")
@@ -398,16 +477,18 @@ watchlist <- list(train=dtrain)
 param <- list( objective    = "binary:logistic",
                booster      = "gbtree",
                eval_metric  = "auc",
+               subsample = 0.8,
+               min_child_weight = 5,
+               colsample_bytree = 0.2,
                eta          = 0.05,
-               max_depth    = 4
+               max_depth    = 8
 )
 
 clf <- xgb.train(   params              = param, 
                     data                = d_train, 
-                    nrounds             = 125, 
+                    nrounds             = 175, 
                     verbose             = 2,
-                    watchlist           = watchlist,
-                    maximize            = FALSE
+                    watchlist           = watchlist
 )
 
 test$target <- -1
@@ -416,5 +497,4 @@ test <- sparse.model.matrix(target ~ ., data = test)
 preds <- predict(clf, test)
 submission <- data.frame(ID=test.id, Business_Sourced=preds)
 cat("saving the submission file\n")
-write.csv(submission, "Submissions/submission12.csv", row.names = F)
-
+write.csv(submission, "Submissions/submission19.csv", row.names = F)
