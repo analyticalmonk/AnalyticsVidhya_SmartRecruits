@@ -321,43 +321,43 @@ test$Manager_Gender <- as.numeric(test$Manager_Gender)
 # Imputing the numeric variables
 # ----------------------------------------------------------
 train$Manager_Grade[!complete.cases(train)] <- median(train$Manager_Grade, na.rm = T)
-# train$Manager_Num_Application[!complete.cases(train)] <- 2.00
-# train$Manager_Num_Coded[!complete.cases(train)] <- mean(train$Manager_Num_Coded, na.rm = T)
-# train$Manager_Business[!complete.cases(train)] <- mean(train$Manager_Business, na.rm = T)
-# train$Manager_Num_Products[!complete.cases(train)] <- mean(train$Manager_Num_Products, 
-#                                                              na.rm = T)
-# train$Manager_Business2[!complete.cases(train)] <- median(train$Manager_Business2, 
-#                                                           na.rm = T)
-# train$Manager_Num_Products2[!complete.cases(train)] <- median(train$Manager_Num_Products2, 
-#                                                           na.rm = T)
-# 
+train$Manager_Num_Application[!complete.cases(train)] <- 2.00
+train$Manager_Num_Coded[!complete.cases(train)] <- mean(train$Manager_Num_Coded, na.rm = T)
+train$Manager_Business[!complete.cases(train)] <- mean(train$Manager_Business, na.rm = T)
+train$Manager_Num_Products[!complete.cases(train)] <- mean(train$Manager_Num_Products, 
+                                                             na.rm = T)
+train$Manager_Business2[!complete.cases(train)] <- median(train$Manager_Business2, 
+                                                          na.rm = T)
+train$Manager_Num_Products2[!complete.cases(train)] <- median(train$Manager_Num_Products2, 
+                                                          na.rm = T)
+
 test$Manager_Grade[!complete.cases(test)] <- median(test$Manager_Grade, na.rm = T)
-# test$Manager_Num_Application[!complete.cases(test)] <- 2.00
-# test$Manager_Num_Coded[!complete.cases(test)] <- mean(test$Manager_Num_Coded, na.rm = T)
-# test$Manager_Business[!complete.cases(test)] <- mean(test$Manager_Business, na.rm = T)
-# test$Manager_Num_Products[!complete.cases(test)] <- mean(test$Manager_Num_Products, 
-#                                                            na.rm = T)
-# test$Manager_Business2[!complete.cases(test)] <- median(test$Manager_Business2, 
-#                                                           na.rm = T)
-# test$Manager_Num_Products2[!complete.cases(test)] <- median(test$Manager_Num_Products2, 
-#                                                               na.rm = T)
-names_numeric <- names(train[,c(17:22)])
-
-train_init = mice(train[,names_numeric], maxit = 0)
-meth = train_init$method
-predM = train_init$predictorMatrix
-meth[names_numeric] = "rf"
-imputed = mice(train[,names_numeric], method=meth, predictorMatrix=predM, m=5)
-imputed <- complete(imputed)
-train[,names_numeric] <- imputed
-
-test_init = mice(test[,names_numeric], maxit = 0)
-meth = test_init$method
-predM = test_init$predictorMatrix
-meth[names_numeric] = "rf"
-imputed = mice(test[,names_numeric], method=meth, predictorMatrix=predM, m=5)
-imputed <- complete(imputed)
-test[,names_numeric] <- imputed
+test$Manager_Num_Application[!complete.cases(test)] <- 2.00
+test$Manager_Num_Coded[!complete.cases(test)] <- mean(test$Manager_Num_Coded, na.rm = T)
+test$Manager_Business[!complete.cases(test)] <- mean(test$Manager_Business, na.rm = T)
+test$Manager_Num_Products[!complete.cases(test)] <- mean(test$Manager_Num_Products, 
+                                                           na.rm = T)
+test$Manager_Business2[!complete.cases(test)] <- median(test$Manager_Business2, 
+                                                          na.rm = T)
+test$Manager_Num_Products2[!complete.cases(test)] <- median(test$Manager_Num_Products2, 
+                                                              na.rm = T)
+# names_numeric <- names(train[,c(17:22)])
+# 
+# train_init = mice(train[,names_numeric], maxit = 0)
+# meth = train_init$method
+# predM = train_init$predictorMatrix
+# meth[names_numeric] = "rf"
+# imputed = mice(train[,names_numeric], method=meth, predictorMatrix=predM, m=5)
+# imputed <- complete(imputed)
+# train[,names_numeric] <- imputed
+# 
+# test_init = mice(test[,names_numeric], maxit = 0)
+# meth = test_init$method
+# predM = test_init$predictorMatrix
+# meth[names_numeric] = "rf"
+# imputed = mice(test[,names_numeric], method=meth, predictorMatrix=predM, m=5)
+# imputed <- complete(imputed)
+# test[,names_numeric] <- imputed
 
 
 # Create variables for business from Category A advisor
@@ -497,4 +497,4 @@ test <- sparse.model.matrix(target ~ ., data = test)
 preds <- predict(clf, test)
 submission <- data.frame(ID=test.id, Business_Sourced=preds)
 cat("saving the submission file\n")
-write.csv(submission, "Submissions/submission19.csv", row.names = F)
+write.csv(submission, "Submissions/submission20.csv", row.names = F)
