@@ -7,8 +7,8 @@ library(mice)
 
 set.seed(1234)
 
-train <- read.csv(file = "Train_pjb2QcD.csv", stringsAsFactors = F)
-test <- read.csv(file = "Test_wyCirpO.csv", stringsAsFactors = F)
+train <- read.csv(file = "Data/Train_pjb2QcD.csv", stringsAsFactors = F)
+test <- read.csv(file = "Data/Test_wyCirpO.csv", stringsAsFactors = F)
 
 test.id <- test$ID
 train.id <- train$ID
@@ -18,8 +18,8 @@ train.y <- train$Business_Sourced
 ## FEATURE ENGINEERING
 ## -------------------
 ## -------------------
-train <- train[,-c(1, 4)]
-test <- test[,-c(1, 4)]
+train <- train[,-c(1, 4, 7, 15)]
+test <- test[,-c(1, 4, 7, 15)]
 
 train$Business_Sourced <- NULL
 
@@ -41,13 +41,6 @@ test$Receipt_year <- as.numeric(test$Receipt_year)
 # ----------------------------------------------------------
 train <- separate(data = train, col = Applicant_BirthDate, 
                   into = c("Applicant_Birth_month", "Applicant_Birth_date", "Applicant_Birth_year"))
-# train$Applicant_Birth_date <- as.numeric(train$Applicant_Birth_date)
-# train$Applicant_Birth_date[is.na(train$Applicant_Birth_date)] <- 
-#     as.numeric(names(which.max((table(train$Applicant_Birth_date)))))
-# 
-# train$Applicant_Birth_month <- as.numeric(train$Applicant_Birth_month)
-# train$Applicant_Birth_month[is.na(train$Applicant_Birth_month)] <- 
-#     as.numeric(names(which.max((table(train$Applicant_Birth_month)))))
 train$Applicant_Birth_date <- NULL
 train$Applicant_Birth_month <- NULL
 train$Applicant_Birth_year <- as.numeric(train$Applicant_Birth_year)
@@ -56,13 +49,6 @@ train$Applicant_Birth_year[is.na(train$Applicant_Birth_year)] <-
 
 test <- separate(data = test, col = Applicant_BirthDate, 
                  into = c("Applicant_Birth_month", "Applicant_Birth_date", "Applicant_Birth_year"))
-# test$Applicant_Birth_date <- as.numeric(test$Applicant_Birth_date)
-# test$Applicant_Birth_date[is.na(test$Applicant_Birth_date)] <- 
-#     as.numeric(names(which.max((table(test$Applicant_Birth_date)))))
-# 
-# test$Applicant_Birth_month <- as.numeric(test$Applicant_Birth_month)
-# test$Applicant_Birth_month[is.na(test$Applicant_Birth_month)] <- 
-#     as.numeric(names(which.max((table(test$Applicant_Birth_month)))))
 test$Applicant_Birth_date <- NULL
 test$Applicant_Birth_month <- NULL
 test$Applicant_Birth_year <- as.numeric(test$Applicant_Birth_year)
@@ -88,8 +74,6 @@ train$Manager_Join_month <- as.numeric(train$Manager_Join_month)
 train$Manager_Join_month[is.na(train$Manager_Join_month)] <- 
     median(train$Manager_Join_month, na.rm = T)
 
-# train$Manager_Join_date <- NULL
-# train$Manager_Join_month <- NULL
 train$Manager_Join_year <- as.numeric(train$Manager_Join_year)
 train$Manager_Join_year[is.na(train$Manager_Join_year)] <- 
     median(train$Manager_Join_year, na.rm = T)
@@ -104,31 +88,14 @@ test$Manager_Join_month <- as.numeric(test$Manager_Join_month)
 test$Manager_Join_month[is.na(test$Manager_Join_month)] <- 
     median(test$Manager_Join_month, na.rm = T)
 
-# test$Manager_Join_date <- NULL
-# test$Manager_Join_month <- NULL
 test$Manager_Join_year <- as.numeric(test$Manager_Join_year)
 test$Manager_Join_year[is.na(test$Manager_Join_year)] <- 
     median(test$Manager_Join_year, na.rm = T)
-
-# Create Manager_Experience variable
-# ----------------------------------
-# train$Manager_Experience <- (2008 - train$Manager_Join_year)
-# train$Manager_Join_year <- NULL
-# test$Manager_Experience <- (2008 - test$Manager_Join_year)
-# test$Manager_Join_year <- NULL
 
 # Separating Manager_DoB into date, month, year
 # ----------------------------------------------------------
 train <- separate(data = train, col = Manager_DoB, 
                   into = c("Manager_Birth_month", "Manager_Birth_date", "Manager_Birth_year"))
-# train$Manager_Birth_date <- as.numeric(train$Manager_Birth_date)
-# train$Manager_Birth_date[is.na(train$Manager_Birth_date)] <- 
-#     median(train$Manager_Birth_date, na.rm = T)
-# 
-# train$Manager_Birth_month <- as.numeric(train$Manager_Birth_month)
-# train$Manager_Birth_month[is.na(train$Manager_Birth_month)] <- 
-#     median(train$Manager_Birth_month, na.rm = T)
-
 train$Manager_Birth_date <- NULL
 train$Manager_Birth_month <- NULL
 train$Manager_Birth_year <- as.numeric(train$Manager_Birth_year)
@@ -137,14 +104,6 @@ train$Manager_Birth_year[is.na(train$Manager_Birth_year)] <-
 
 test <- separate(data = test, col = Manager_DoB, 
                  into = c("Manager_Birth_month", "Manager_Birth_date", "Manager_Birth_year"))
-# test$Manager_Birth_date <- as.numeric(test$Manager_Birth_date)
-# test$Manager_Birth_date[is.na(test$Manager_Birth_date)] <- 
-#     median(test$Manager_Birth_date, na.rm = T)
-# 
-# test$Manager_Birth_month <- as.numeric(test$Manager_Birth_month)
-# test$Manager_Birth_month[is.na(test$Manager_Birth_month)] <- 
-#     median(test$Manager_Birth_month, na.rm = T)
-
 test$Manager_Birth_date <- NULL
 test$Manager_Birth_month <- NULL
 test$Manager_Birth_year <- as.numeric(test$Manager_Birth_year)
@@ -169,32 +128,6 @@ test$Applicant_Gender[test$Applicant_Gender == "F"] <- 1
 test$Applicant_Gender[test$Applicant_Gender == "M"] <- 2
 test$Applicant_Gender[test$Applicant_Gender == ""] <- 3
 test$Applicant_Gender <- as.numeric(test$Applicant_Gender)
-
-# train$Female <- as.numeric(train$Applicant_Gender != "M")
-# train$Male <- as.numeric(!train$Female)
-# test$Female <- as.numeric(test$Applicant_Gender != "M")
-# test$Male <- as.numeric(!test$Female)
-# 
-# train$Applicant_Gender <- NULL
-# test$Applicant_Gender <- NULL
-
-# Encoding Applicant_Marital_Status
-# ----------------------------------------------------------
-train$Applicant_Marital_Status[train$Applicant_Marital_Status == "M"] <- 1
-train$Applicant_Marital_Status[train$Applicant_Marital_Status == "S"] <- 2
-train$Applicant_Marital_Status[train$Applicant_Marital_Status == "D"] <- 3
-train$Applicant_Marital_Status[train$Applicant_Marital_Status == "W" |
-                                   train$Applicant_Marital_Status == "D" |
-                                   train$Applicant_Marital_Status == ""] <- 3
-train$Applicant_Marital_Status <- as.numeric(train$Applicant_Marital_Status)
-
-test$Applicant_Marital_Status[test$Applicant_Marital_Status == "M"] <- 1
-test$Applicant_Marital_Status[test$Applicant_Marital_Status == "S"] <- 2
-test$Applicant_Marital_Status[test$Applicant_Marital_Status == "D"] <- 3
-test$Applicant_Marital_Status[test$Applicant_Marital_Status == "W" |
-                                   test$Applicant_Marital_Status == "D" |
-                                   test$Applicant_Marital_Status == ""] <- 3
-test$Applicant_Marital_Status <- as.numeric(test$Applicant_Marital_Status)
 
 # Encoding Applicant_Occupation
 # ----------------------------------------------------------
@@ -306,18 +239,6 @@ test$Manager_Status[test$Manager_Status == "Probation"] <- 2
 test$Manager_Status[test$Manager_Status == ""] <- 3
 test$Manager_Status <- as.numeric(test$Manager_Status)
 
-# Encoding Manager_Gender
-# ----------------------------------------------------------
-train$Manager_Gender[train$Manager_Gender == "F"] <- 1
-train$Manager_Gender[train$Manager_Gender == "M"] <- 2
-train$Manager_Gender[train$Manager_Gender == ""] <- 3
-train$Manager_Gender <- as.numeric(train$Manager_Gender)
-
-test$Manager_Gender[test$Manager_Gender == "F"] <- 1
-test$Manager_Gender[test$Manager_Gender == "M"] <- 2
-test$Manager_Gender[test$Manager_Gender == ""] <- 3
-test$Manager_Gender <- as.numeric(test$Manager_Gender)
-
 # Imputing the numeric variables
 # ----------------------------------------------------------
 train$Manager_Grade[!complete.cases(train)] <- median(train$Manager_Grade, na.rm = T)
@@ -341,44 +262,6 @@ test$Manager_Business2[!complete.cases(test)] <- median(test$Manager_Business2,
                                                           na.rm = T)
 test$Manager_Num_Products2[!complete.cases(test)] <- median(test$Manager_Num_Products2, 
                                                               na.rm = T)
-# names_numeric <- names(train[,c(17:22)])
-# 
-# train_init = mice(train[,names_numeric], maxit = 0)
-# meth = train_init$method
-# predM = train_init$predictorMatrix
-# meth[names_numeric] = "rf"
-# imputed = mice(train[,names_numeric], method=meth, predictorMatrix=predM, m=5)
-# imputed <- complete(imputed)
-# train[,names_numeric] <- imputed
-# 
-# test_init = mice(test[,names_numeric], maxit = 0)
-# meth = test_init$method
-# predM = test_init$predictorMatrix
-# meth[names_numeric] = "rf"
-# imputed = mice(test[,names_numeric], method=meth, predictorMatrix=predM, m=5)
-# imputed <- complete(imputed)
-# test[,names_numeric] <- imputed
-
-
-# Create variables for business from Category A advisor
-# -----------------------------------------------------
-# train$Manager_Business1 <- (train$Manager_Business - train$Manager_Business2)
-# train$Manager_Num_Products1 <- (train$Manager_Num_Products2 - train$Manager_Num_Products2)
-# 
-# test$Manager_Business1 <- (test$Manager_Business - test$Manager_Business2)
-# test$Manager_Num_Products1 <- (test$Manager_Num_Products2 - test$Manager_Num_Products2)
-
-# ----------------------------------------------
-# train$Manager_Gender <- NULL
-# test$Manager_Gender <- NULL
-# train$Applicant_Marital_Status <- NULL
-# test$Applicant_Marital_Status <- NULL
-
-# ----------------------------------------------
-# train$Applicant_City_PIN[is.na(train$Applicant_City_PIN)] <- 
-#     mean(train$Applicant_City_PIN, na.rm = T)
-# test$Applicant_City_PIN[is.na(test$Applicant_City_PIN)] <- 
-#     mean(test$Applicant_City_PIN, na.rm = T)
 
 # Add back the Target variable, Business_Sourced
 # ----------------------------------------------
@@ -457,7 +340,7 @@ for (fold in folds) {
     
     clf <- xgb.train(   params              = param, 
                         data                = d_train, 
-                        nrounds             = 175, 
+                        nrounds             = 150, 
                         verbose             = 2,
                         watchlist           = watchlist
     )    
@@ -486,7 +369,7 @@ param <- list( objective    = "binary:logistic",
 
 clf <- xgb.train(   params              = param, 
                     data                = d_train, 
-                    nrounds             = 175, 
+                    nrounds             = 150, 
                     verbose             = 2,
                     watchlist           = watchlist
 )
@@ -497,4 +380,4 @@ test <- sparse.model.matrix(target ~ ., data = test)
 preds <- predict(clf, test)
 submission <- data.frame(ID=test.id, Business_Sourced=preds)
 cat("saving the submission file\n")
-write.csv(submission, "Submissions/submission20.csv", row.names = F)
+write.csv(submission, "Submissions/submission.csv", row.names = F)
